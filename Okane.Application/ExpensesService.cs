@@ -20,4 +20,32 @@ public class ExpensesService(List<Expense> expenses)
     }
 
     public IEnumerable<Expense> All() => expenses;
+
+    public Expense? Update(int expenseId, CreateExpenseRequest request)
+    {
+        var expense = expenses.FirstOrDefault(e => e.Id == expenseId);
+        if (expense == null)
+            return null;
+
+        var (amount, categoryName) = request;
+        var updatedExpense = new Expense(expenseId, amount, categoryName);
+        
+        var index = expenses.FindIndex(e => e.Id == expenseId);
+        if (index >= 0)
+        {
+            expenses[index] = updatedExpense;
+        }
+        
+        return updatedExpense;
+    }
+
+    public bool Delete(int expenseId)
+    {
+        var expense = expenses.FirstOrDefault(e => e.Id == expenseId);
+        if (expense == null)
+            return false;
+
+        expenses.Remove(expense);
+        return true;
+    }
 }

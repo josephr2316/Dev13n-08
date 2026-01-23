@@ -34,4 +34,26 @@ app.MapGet("/expenses/{id}",
 
 app.MapGet("/expenses", (ExpensesService service) => Results.Ok(service.All()));
 
+app.MapPut("/expenses/{id}", 
+    (ExpensesService service, int id, CreateExpenseRequest request) =>
+    {
+        var response = service.Update(id, request);
+        
+        if (response == null)
+            return Results.NotFound();
+        
+        return Results.Ok(response);
+    });
+
+app.MapDelete("/expenses/{id}", 
+    (ExpensesService service, int id) =>
+    {
+        var deleted = service.Delete(id);
+        
+        if (!deleted)
+            return Results.NotFound();
+        
+        return Results.NoContent();
+    });
+
 app.Run();
