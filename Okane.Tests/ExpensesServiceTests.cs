@@ -1,28 +1,59 @@
-﻿using Okane.Application;
+using Okane.Application;
 
 namespace Okane.Tests;
 
 public class ExpensesServiceTests
 {
+    private readonly ExpensesService _service;
+    private List<Expense> _expenses;
+
+    public ExpensesServiceTests()
+    {
+        _expenses = new List<Expense>();
+        _service = new ExpensesService(_expenses);
+    }
+
     [Fact]
     public void Create_Response()
     {
-        var service = new ExpensesService([]);
-        var expense = service.Create(new(10, "Food"));
+        var expense = _service.Create(new(10, "Food"));
 
         Assert.Equal(10, expense.Amount);
         Assert.Equal("Food", expense.CategoryName);
     }
     
     [Fact]
-    public void Create_AddsExpense()
+    public void Retrieve_NotFound()
     {
-        var expenses = new List<Expense>();
-        var service = new ExpensesService(expenses);
+        var retrieved = _service.Retrieve(1);
         
-        var expense = service.Create(new(10, "Food"));
+        Assert.Null(retrieved);
+    }
+    
+    [Fact]
+    public void Retrieve_Updated()
+    {
+        var createResponse = _service.Create(
+            new(10, "Food"));
+        
+        var updated = _service.Update(
+            createResponse.Id, new(20, "Drinks"));
+        
+        var retrieved = _service.Retrieve(createResponse.Id);
+        Assert.NotNull(retrieved);
+        
+        Assert.Equal(20, retrieved.Amount);
+        Assert.Equal("Drinks", retrieved.CategoryName);
+    }
+    
+    [Fact]
+    public void Retrieve_OneExpense()
+    {
+        _expenses.Clear();
+        
+        var expense = _service.Create(new(10, "Food"));
 
-        var retrieved = service.Retrieve(expense.Id);
+        var retrieved = _service.Retrieve(expense.Id);
         
         Assert.NotNull(retrieved);
         Assert.Equal(10, retrieved.Amount);
@@ -30,12 +61,15 @@ public class ExpensesServiceTests
     }
     
     [Fact]
-    public void Retrieve_NotFound()
+    public void Retrieve_Deleted()
     {
-        var expenses = new List<Expense>();
-        var service = new ExpensesService(expenses);
+        var createResponse = _service.Create(
+            new(10, "Food"));
 
-        var retrieved = service.Retrieve(1);
+        var deleteResponse = _service.Delete(createResponse.Id);
+        Assert.True(deleteResponse);
+        
+        var retrieved = _service.Retrieve(createResponse.Id);
         
         Assert.Null(retrieved);
     }
@@ -43,18 +77,50 @@ public class ExpensesServiceTests
     [Fact]
     public void All()
     {
-        var expenses = new List<Expense>();
-        var service = new ExpensesService(expenses);
-
-        service.Create(new(10, "Food"));
-        service.Create(new(20, "Drinks"));
+        _service.Create(new(10, "Food"));
+        _service.Create(new(20, "Drinks"));
         
-        var response = service.All().ToArray();
+        var response = _service.All().ToArray();
         
         Assert.Equal(2, response.Count());
         
         var firstExpense = response.First();
         Assert.Equal(10, firstExpense.Amount);
         Assert.Equal("Food", firstExpense.CategoryName);
+    }
+
+    [Fact]
+    public void Update_Response()
+    {
+        var createResponse = _service.Create(
+            new(10, "Food"));
+        
+        var updated = _service.Update(
+            createResponse.Id, new(20, "Drinks"));
+        
+        Assert.NotNull(updated);
+        
+        Assert.Equal(20, updated.Amount);
+        Assert.Equal("Drinks", updated.CategoryName);
+    }
+    
+    [Fact]
+    public void Update_NotFound()
+    {
+        var updated = _service.Update(
+            999, new(20, "Drinks"));
+        
+        Assert.Null(updated);
+    }
+
+    [Fact]
+    public void Delete_Response()
+    {
+        var createResponse = _service.Create(
+            new(10, "Food"));
+
+        var response = _service.Delete(createResponse.Id);
+        
+        Assert.True(response);
     }
 }

@@ -35,7 +35,7 @@ app.MapGet("/expenses/{id}",
 app.MapGet("/expenses", (ExpensesService service) => Results.Ok(service.All()));
 
 app.MapPut("/expenses/{id}", 
-    (ExpensesService service, int id, CreateExpenseRequest request) =>
+    (ExpensesService service, int id, UpdateExpenseRequest request) =>
     {
         var response = service.Update(id, request);
         

@@ -1,0 +1,97 @@
+==========================================
+EJEMPLOS DE BODIES PARA POSTMAN
+==========================================
+
+BASE URL: http://localhost:5207
+
+==========================================
+1. POST /expenses - CREAR UN GASTO
+==========================================
+
+URL: POST http://localhost:5207/expenses
+
+Headers:
+Content-Type: application/json
+
+Body (raw JSON):
+{
+  "amount": 150,
+  "categoryName": "Groceries"
+}
+
+==========================================
+2. PUT /expenses/{id} - ACTUALIZAR UN GASTO
+==========================================
+
+URL: PUT http://localhost:5207/expenses/1
+
+Headers:
+Content-Type: application/json
+
+Body (raw JSON):
+{
+  "amount": 300,
+  "categoryName": "Supermarket"
+}
+
+NOTA: Reemplaza el "1" en la URL con el ID del gasto que quieres actualizar
+
+==========================================
+3. DELETE /expenses/{id} - ELIMINAR UN GASTO
+==========================================
+
+URL: DELETE http://localhost:5207/expenses/1
+
+Headers: (ninguno necesario)
+
+Body: (ninguno - no requiere body)
+
+NOTA: Reemplaza el "1" en la URL con el ID del gasto que quieres eliminar
+
+==========================================
+SECUENCIA DE PRUEBA PASO A PASO
+==========================================
+
+PASO 1: Crear un gasto
+-----------------------
+POST http://localhost:5207/expenses
+Body:
+{
+  "amount": 150,
+  "categoryName": "Groceries"
+}
+
+Respuesta esperada: 201 Created
+{
+  "id": 1,
+  "amount": 150,
+  "categoryName": "Groceries"
+}
+
+GUARDA EL ID (ejemplo: 1) para los siguientes pasos
+
+
+PASO 2: Actualizar el gasto creado
+------------------------------------
+PUT http://localhost:5207/expenses/1
+Body:
+{
+  "amount": 300,
+  "categoryName": "Supermarket"
+}
+
+Respuesta esperada: 200 OK
+{
+  "id": 1,
+  "amount": 300,
+  "categoryName": "Supermarket"
+}
+
+
+PASO 3: Eliminar el gasto
+--------------------------
+DELETE http://localhost:5207/expenses/1
+
+Respuesta esperada: 204 No Content (sin body)
+
+==========================================

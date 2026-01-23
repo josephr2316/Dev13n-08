@@ -21,7 +21,7 @@ public class ExpensesService(List<Expense> expenses)
 
     public IEnumerable<Expense> All() => expenses;
 
-    public Expense? Update(int expenseId, CreateExpenseRequest request)
+    public Expense? Update(int expenseId, UpdateExpenseRequest request)
     {
         var expense = expenses.FirstOrDefault(e => e.Id == expenseId);
         if (expense == null)

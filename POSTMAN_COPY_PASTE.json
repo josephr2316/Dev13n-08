@@ -1,0 +1,26 @@
+{
+  "POST_CREATE": {
+    "url": "http://localhost:5207/expenses",
+    "method": "POST",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": "{\n  \"amount\": 150,\n  \"categoryName\": \"Groceries\"\n}"
+  },
+  "PUT_UPDATE": {
+    "url": "http://localhost:5207/expenses/1",
+    "method": "PUT",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": "{\n  \"amount\": 300,\n  \"categoryName\": \"Supermarket\"\n}",
+    "note": "Reemplaza el '1' en la URL con el ID del gasto que quieres actualizar"
+  },
+  "DELETE_REMOVE": {
+    "url": "http://localhost:5207/expenses/1",
+    "method": "DELETE",
+    "headers": {},
+    "body": null,
+    "note": "Reemplaza el '1' en la URL con el ID del gasto que quieres eliminar. No requiere body."
+  }
+}

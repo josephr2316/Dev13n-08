@@ -1,0 +1,108 @@
+{
+  "description": "Ejemplos de JSON para probar los endpoints en Postman",
+  "baseUrl": "http://localhost:5207",
+  "endpoints": {
+    "POST /expenses": {
+      "method": "POST",
+      "url": "http://localhost:5207/expenses",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "amount": 100,
+        "categoryName": "Food"
+      },
+      "expectedResponse": "201 Created con el expense creado"
+    },
+    "GET /expenses": {
+      "method": "GET",
+      "url": "http://localhost:5207/expenses",
+      "headers": {},
+      "body": null,
+      "expectedResponse": "200 OK con array de todos los expenses"
+    },
+    "GET /expenses/{id}": {
+      "method": "GET",
+      "url": "http://localhost:5207/expenses/1",
+      "headers": {},
+      "body": null,
+      "expectedResponse": "200 OK con el expense o 404 Not Found"
+    },
+    "PUT /expenses/{id}": {
+      "method": "PUT",
+      "url": "http://localhost:5207/expenses/1",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "amount": 200,
+        "categoryName": "Updated Category"
+      },
+      "expectedResponse": "200 OK con el expense actualizado o 404 Not Found"
+    },
+    "DELETE /expenses/{id}": {
+      "method": "DELETE",
+      "url": "http://localhost:5207/expenses/1",
+      "headers": {},
+      "body": null,
+      "expectedResponse": "204 No Content o 404 Not Found"
+    }
+  },
+  "testSequence": [
+    {
+      "step": 1,
+      "action": "Crear un expense",
+      "endpoint": "POST /expenses",
+      "json": {
+        "amount": 100,
+        "categoryName": "Food"
+      },
+      "note": "Guarda el 'id' de la respuesta para los siguientes pasos"
+    },
+    {
+      "step": 2,
+      "action": "Obtener todos los expenses",
+      "endpoint": "GET /expenses",
+      "json": null,
+      "note": "Verifica que el expense creado esté en la lista"
+    },
+    {
+      "step": 3,
+      "action": "Obtener un expense por ID",
+      "endpoint": "GET /expenses/{id}",
+      "json": null,
+      "note": "Usa el ID del expense creado en el paso 1"
+    },
+    {
+      "step": 4,
+      "action": "Actualizar el expense",
+      "endpoint": "PUT /expenses/{id}",
+      "json": {
+        "amount": 250,
+        "categoryName": "Updated Food"
+      },
+      "note": "Usa el ID del expense creado en el paso 1"
+    },
+    {
+      "step": 5,
+      "action": "Verificar la actualización",
+      "endpoint": "GET /expenses/{id}",
+      "json": null,
+      "note": "Verifica que el expense tenga los nuevos valores"
+    },
+    {
+      "step": 6,
+      "action": "Eliminar el expense",
+      "endpoint": "DELETE /expenses/{id}",
+      "json": null,
+      "note": "Usa el ID del expense creado en el paso 1"
+    },
+    {
+      "step": 7,
+      "action": "Verificar la eliminación",
+      "endpoint": "GET /expenses/{id}",
+      "json": null,
+      "note": "Debería retornar 404 Not Found"
+    }
+  ]
+}
