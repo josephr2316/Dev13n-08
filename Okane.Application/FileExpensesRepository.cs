@@ -2,10 +2,23 @@ namespace Okane.Application;
 
 public class FileExpensesRepository : IRepository<Expense>
 {
+    private readonly string _filePath = "expenses.txt";
+
+
     public void Add(Expense entity)
     {
-        throw new NotImplementedException();
+        var lines = File.Exists(_filePath) ? File.ReadAllLines(_filePath).toList() : [];
+        var lastId = lines.Length > 0 ? int.Parse(lines[^1].Split(',')[0]) : 0;
+        // new List<string>() // Array.Empty<string>()
+        / * var maxId = lines
+            .Select(line => int.Parse(line.Split(',')[0]))
+            .Max();*/
+        entity.Id = lastId + 1;
+
+        var newLine = $"{entity.Id},{entity.Amount},{entity.CategoryName}\n";
+        File.AppendAllText(_filePath, newLine + Environment.NewLine);
     }
+
 
     public Expense? ById(int id)
     {

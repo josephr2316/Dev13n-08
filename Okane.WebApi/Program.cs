@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services
     .AddOpenApi()
     .AddTransient<ExpensesService>()
-    .AddSingleton<IRepository<Expense>, InMemoryRepository<Expense>>();
+    .AddSingleton<IRepository<Expense>, FileExpensesRepository<Expense>>();
 
 var app = builder.Build();
     
