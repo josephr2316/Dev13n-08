@@ -35,7 +35,14 @@ public class FileExpensesRepository : IRepository<Expense>
 
     public IEnumerable<Expense> All()
     {
-        throw new NotImplementedException();
+        if (!File.Exists(_filePath))
+            return Enumerable.Empty<Expense>();
+
+        return File.ReadLines(_filePath).Select(line => {
+            var parts = line.Split(',');
+            return new Expense { Id = int.Parse(parts[0]), Amount = int.Parse(parts[1]), CategoryName = parts[2] };
+        });
+
     }
 
     public void Remove(int id)
