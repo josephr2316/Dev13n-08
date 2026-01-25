@@ -2,7 +2,12 @@ namespace Okane.Application;
 
 public class FileExpensesRepository : IRepository<Expense>
 {
-    private readonly string _filePath = "expenses.txt";
+    private readonly string _filePath;
+
+    public FileExpensesRepository(string filePath = "expenses.txt")
+    {
+        _filePath = filePath;
+    }
     
     public void Add(Expense entity)
     {

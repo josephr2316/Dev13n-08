@@ -5,23 +5,27 @@ namespace Okane.Tests;
 public class ExpensesServiceTests_WithFile : IDisposable
 {
     private readonly ExpensesService _service;
+    private readonly string _testFilePath;
 
     // Before each test
     public ExpensesServiceTests_WithFile()
     {
         // Delete file if exists to start clean
-        if (File.Exists("expenses.txt"))
-            File.Delete("expenses.txt");
+       // if (File.Exists("expenses.txt"))
+       //     File.Delete("expenses.txt");
+       _testFilePath = $"test_expenses_{Guid.NewGuid()}.txt";
         
-        _service = new ExpensesService(new FileExpensesRepository());
+        _service = new ExpensesService(new FileExpensesRepository(_testFilePath));
     }
     
     // After each test
     public void Dispose()
     {
         // Delete file after each test to clean up
-        if (File.Exists("expenses.txt"))
-            File.Delete("expenses.txt");
+        //if (File.Exists("expenses.txt"))
+        //    File.Delete("expenses.txt");
+        if (File.Exists(_testFilePath))
+            File.Delete(_testFilePath);
     }
 
     [Fact]
