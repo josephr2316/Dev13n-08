@@ -21,7 +21,16 @@ public class FileExpensesRepository : IRepository<Expense>
 
     public Expense? ById(int id)
     {
-        throw new NotImplementedException();
+        if (!File.Exists(_filePath))
+            return null;
+
+        foreach (var line in File.ReadLines(_filePath)){
+            var parts = line.Split(',');
+            if (parts.Length > 0 && parts[0] == id){
+                return new Expense { Id = int.Parse(parts[0]), Amount = int.Parse(parts[1]), CategoryName = parts[2] };
+            }
+        }
+        return null;
     }
 
     public IEnumerable<Expense> All()
