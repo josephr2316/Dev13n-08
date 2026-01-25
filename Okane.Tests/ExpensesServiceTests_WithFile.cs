@@ -1,4 +1,4 @@
-﻿using Okane.Application;
+using Okane.Application;
 
 namespace Okane.Tests;
 
@@ -9,7 +9,9 @@ public class ExpensesServiceTests_WithFile : IDisposable
     // Before each test
     public ExpensesServiceTests_WithFile()
     {
-        // TODO: Create file
+        // Delete file if exists to start clean
+        if (File.Exists("expenses.txt"))
+            File.Delete("expenses.txt");
         
         _service = new ExpensesService(new FileExpensesRepository());
     }
@@ -17,7 +19,9 @@ public class ExpensesServiceTests_WithFile : IDisposable
     // After each test
     public void Dispose()
     {
-        // TODO: Delete file
+        // Delete file after each test to clean up
+        if (File.Exists("expenses.txt"))
+            File.Delete("expenses.txt");
     }
 
     [Fact]

@@ -6,7 +6,9 @@ public class FileExpensesRepository : IRepository<Expense>
     
     public void Add(Expense entity)
     {
-        var lines = File.Exists(_filePath) ? File.ReadAllLines(_filePath).ToList() : new List<string>();
+        var lines = File.Exists(_filePath) 
+            ? File.ReadAllLines(_filePath).Where(line => !string.IsNullOrWhiteSpace(line)).ToList() 
+            : new List<string>();
         var lastId = 0;
         if (lines.Count > 0)
         {
@@ -15,8 +17,8 @@ public class FileExpensesRepository : IRepository<Expense>
         }
         entity.Id = lastId + 1;
 
-        var newLine = $"{entity.Id},{entity.Amount},{entity.CategoryName}\n";
-        File.AppendAllText(_filePath, newLine);
+        var newLine = $"{entity.Id},{entity.Amount},{entity.CategoryName}";
+        File.AppendAllText(_filePath, newLine + Environment.NewLine);
     }
 
 
@@ -27,6 +29,9 @@ public class FileExpensesRepository : IRepository<Expense>
         
         foreach (var line in File.ReadLines(_filePath))
         {
+            if (string.IsNullOrWhiteSpace(line))
+                continue;
+                
             var parts = line.Split(',');
             if (parts.Length >= 3)
             {
@@ -50,15 +55,19 @@ public class FileExpensesRepository : IRepository<Expense>
         if (!File.Exists(_filePath))
             return [];
 
-        return File.ReadLines(_filePath).Select(line => {
-            var parts = line.Split(',');
-            return new Expense { Id = int.Parse(parts[0]), Amount = int.Parse(parts[1]), CategoryName = parts[2] };
-        });
+        return File.ReadLines(_filePath)
+            .Where(line => !string.IsNullOrWhiteSpace(line))
+            .Select(line => {
+                var parts = line.Split(',');
+                return new Expense { Id = int.Parse(parts[0]), Amount = int.Parse(parts[1]), CategoryName = parts[2] };
+            });
     }
 
     public void Remove(int id)
     {
-        var lines = File.ReadAllLines(_filePath).ToList();
+        var lines = File.ReadAllLines(_filePath)
+            .Where(line => !string.IsNullOrWhiteSpace(line))
+            .ToList();
         var index = lines.FindIndex(line => int.Parse(line.Split(',')[0]) == id);
         lines.RemoveAt(index);
         File.WriteAllLines(_filePath, lines);
@@ -70,6 +79,7 @@ public class FileExpensesRepository : IRepository<Expense>
             return false;
 
         return File.ReadLines(_filePath)
+            .Where(line => !string.IsNullOrWhiteSpace(line))
             .Any(line =>
             {
                 var parts = line.Split(',');
@@ -79,7 +89,9 @@ public class FileExpensesRepository : IRepository<Expense>
 
     public Expense Update(int id, UpdateExpenseRequest request)
     {
-        var lines = File.ReadAllLines(_filePath).ToList();
+        var lines = File.ReadAllLines(_filePath)
+            .Where(line => !string.IsNullOrWhiteSpace(line))
+            .ToList();
         var index = lines.FindIndex(line => int.Parse(line.Split(',')[0]) == id);
         lines[index] = $"{id},{request.Amount},{request.CategoryName}";
         
