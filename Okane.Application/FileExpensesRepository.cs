@@ -26,17 +26,27 @@ public class FileExpensesRepository : IRepository<Expense>
 
         foreach (var line in File.ReadLines(_filePath)){
             var parts = line.Split(',');
-            if (parts.Length > 0 && parts[0] == id){
+            if (parts.Length > 0 && parts[0] == id.ToString()){
                 return new Expense { Id = int.Parse(parts[0]), Amount = int.Parse(parts[1]), CategoryName = parts[2] };
             }
         }
-        return null;
+
+        return !File.Exists(_filePath) ? null : File.ReadLines(_filePath).
+            Select(line =>
+                {
+                    var parts = line.Split(',');
+                    return new Expense
+                    {
+                        Id = int.Parse(parts[0]), Amount = int.Parse(parts[1]), CategoryName = parts[2]
+                    };
+                }
+            ).FirstOrDefault(e => e.Id == id);
     }
 
     public IEnumerable<Expense> All()
     {
         if (!File.Exists(_filePath))
-            return Enumerable.Empty<Expense>();
+            return [];
 
         return File.ReadLines(_filePath).Select(line => {
             var parts = line.Split(',');
