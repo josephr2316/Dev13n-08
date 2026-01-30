@@ -15,7 +15,7 @@ public class ExpensesService(
         if (category == null)
             return new ErrorResult<ExpenseResponse>(
                 $"Category name '{request.CategoryName}' not found.");
-        
+
         var expense = Expense(request, category);
         expenses.Add(expense);
 
@@ -74,12 +74,13 @@ public class ExpensesService(
 
         return new OkResult();
     }
-    
+
     private static Expense Expense(CreateExpenseRequest request, Category category) =>
         new()
         {
             Amount = request.Amount,
             Category = category,
+            CategoryId = category.Id,
             Description = request.Description
         };
 }

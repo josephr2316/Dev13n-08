@@ -10,8 +10,9 @@ public class CategoriesServiceTests
     public CategoriesServiceTests()
     {
         var categoriesRepository = new InMemoryCategoriesRepository();
-        _service = new CategoriesService(categoriesRepository);
-        _expensesService = new ExpensesService(new InMemoryExpensesRepository(), categoriesRepository,
+        var expensesRepository = new InMemoryExpensesRepository();
+        _service = new CategoriesService(categoriesRepository, expensesRepository);
+        _expensesService = new ExpensesService(expensesRepository, categoriesRepository,
             new ExpenseResponseFactory());
     }
     
