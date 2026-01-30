@@ -1,25 +1,32 @@
 namespace Okane.Application;
 
-public class ExpensesService(IRepository<Expense> expenses)
+public class ExpensesService(IExpenseRepository expenses, ICategoryRepository categories)
 {
     public Result<ExpenseResponse> Create(CreateExpenseRequest request)
     {
         if (request.Amount < 1)
             return new ErrorResult<ExpenseResponse>(
                 $"{nameof(request.Amount)} must be greater than 1.");
-        
+
+        var category = categories.ById(request.CategoryId);
+        if (category is null)
+            return new NotFoundResult<ExpenseResponse>(
+                $"Category with id {request.CategoryId} was not found.");
+
         var expense = new Expense
         {
             Amount = request.Amount,
-            CategoryName = request.CategoryName,
+            CategoryId = category.Id,
+            Category = category,
             Description = request.Description
         };
         expenses.Add(expense);
-        
+
         var response = new ExpenseResponse(
-            expense.Id, 
-            expense.Amount, 
-            expense.CategoryName, 
+            expense.Id,
+            expense.Amount,
+            category.Id,
+            category.Name,
             expense.Description);
         return new OkResult<ExpenseResponse>(response);
     }
@@ -27,15 +34,18 @@ public class ExpensesService(IRepository<Expense> expenses)
     public Result<ExpenseResponse> Retrieve(int expenseId)
     {
         var expense = expenses.ById(expenseId);
-        
+
         if (expense is null)
             return new NotFoundResult<ExpenseResponse>(
                 $"Expense with id {expenseId} was not found.");
-        
+
+        var categoryName = expense.Category?.Name ?? string.Empty;
+
         var response = new ExpenseResponse(
-            expense.Id, 
-            expense.Amount, 
-            expense.CategoryName, 
+            expense.Id,
+            expense.Amount,
+            expense.CategoryId,
+            categoryName,
             expense.Description);
 
         return new OkResult<ExpenseResponse>(response);
@@ -45,11 +55,12 @@ public class ExpensesService(IRepository<Expense> expenses)
     {
         var response = expenses.All()
             .Select(expense => new ExpenseResponse(
-                expense.Id, 
-                expense.Amount, 
-                expense.CategoryName, 
+                expense.Id,
+                expense.Amount,
+                expense.CategoryId,
+                expense.Category?.Name ?? string.Empty,
                 expense.Description));
-        
+
         return new OkResult<IEnumerable<ExpenseResponse>>(response);
     }
 
@@ -63,12 +74,19 @@ public class ExpensesService(IRepository<Expense> expenses)
             return new NotFoundResult<ExpenseResponse>(
                 $"Expense with id {id} was not found.");
 
+        var category = categories.ById(request.CategoryId);
+        if (category is null)
+            return new NotFoundResult<ExpenseResponse>(
+                $"Category with id {request.CategoryId} was not found.");
+
         var updated = expenses.Update(id, request);
-        
+        updated.Category = category;
+
         var response = new ExpenseResponse(
-            updated.Id, 
-            updated.Amount, 
-            updated.CategoryName,
+            updated.Id,
+            updated.Amount,
+            updated.CategoryId,
+            category.Name,
             updated.Description);
         return new OkResult<ExpenseResponse>(response);
     }

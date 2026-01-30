@@ -8,7 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services
     .AddOpenApi()
     .AddTransient<ExpensesService>()
-    .AddTransient<IRepository<Expense>, ExpensesRepository>()
+    .AddTransient<IExpenseRepository, ExpensesRepository>()
+    .AddTransient<ICategoryRepository, CategoriesRepository>()
     .AddDbContext<OkaneDbContext>(options => 
         options.UseNpgsql(
             builder.Configuration.GetConnectionString("Default"),
