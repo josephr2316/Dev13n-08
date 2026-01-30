@@ -4,12 +4,16 @@ public class CategoriesService(ICategoriesRepository categories)
 {
     public Result<CategoryResponse> Create(CreateCategoryRequest request)
     {
+        var existing = categories.ByName(request.Name);
+        if (existing != null)
+            return new ErrorResult<CategoryResponse>("Category already exists");
+
         var category = new Category
         {
             Name = request.Name
         };
         categories.Add(category);
-        
+
         return new OkResult<CategoryResponse>(new CategoryResponse(category.Id, category.Name));
     }
 
