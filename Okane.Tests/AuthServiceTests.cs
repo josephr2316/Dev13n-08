@@ -81,4 +81,15 @@ public class AuthServiceTests
         
         Assert.Equal("Username cannot be empty.", error);
     }
+
+    public void SingUp_DuplicateUsername()
+    { 
+        _service.SignUp(new("same-user", "1234", "1234"))
+            .AssertOk();
+
+        var error = _service.SignUp(new("same-user", "OtherPassword", "OtherPassword"))
+            .AssertError();
+        
+        Assert.Equal("Username is already taken.", error);
+    }
 }

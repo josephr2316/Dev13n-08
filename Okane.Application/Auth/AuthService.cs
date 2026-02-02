@@ -9,6 +9,9 @@ public class AuthService(
 {
     public Result<SignUpResponse> SignUp(SignUpRequest request)
     {
+        if (users.ByUsername(request.Username) != null)
+            return new ErrorResult<SignUpResponse>("Username is already taken.");
+        
         if (string.IsNullOrWhiteSpace(request.Username))
             return new ErrorResult<SignUpResponse>("Username cannot be empty.");
         
