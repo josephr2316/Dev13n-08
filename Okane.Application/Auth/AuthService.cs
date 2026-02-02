@@ -9,6 +9,9 @@ public class AuthService(
 {
     public Result<SignUpResponse> SignUp(SignUpRequest request)
     {
+        if (request.Password != request.PasswordConfirmation)
+            return new ErrorResult<SignUpResponse>("Password and password confirmation do not match.");
+
         users.Add(new User
         {
             Username = request.Username,

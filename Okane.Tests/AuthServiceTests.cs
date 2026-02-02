@@ -16,7 +16,7 @@ public class AuthServiceTests
     [Fact]
     public void SignUp()
     {
-        var response = _service.SignUp(new("test-user", "1234"))
+        var response = _service.SignUp(new("test-user", "1234", "1234"))
             .AssertOk();
         
         Assert.Equal("test-user", response.Username);
@@ -25,7 +25,7 @@ public class AuthServiceTests
     [Fact]
     public void SingIn()
     {
-        _service.SignUp(new("test-user", "1234"))
+        _service.SignUp(new("test-user", "1234", "1234"))
             .AssertOk();
         
         var response = _service.SignIn(new("test-user", "1234"))
@@ -37,7 +37,7 @@ public class AuthServiceTests
     [Fact]
     public void SingIn_PasswordDoesNotMatch()
     {
-        _service.SignUp(new("test-user", "4321"))
+        _service.SignUp(new("test-user", "4321", "4321"))
             .AssertOk();
         
         var error = _service.SignIn(new("test-user", "1234"))
@@ -53,5 +53,14 @@ public class AuthServiceTests
             .AssertUnauthorized();
         
         Assert.Equal("Invalid username or password.", error);
+    }
+
+    [Fact]
+    public void Signup_PasswordAndPasswordConfirmationDoNotMatch()
+    {
+        var error = _service.SignUp(new("test-user", "1234", "12345"))
+            .AssertError();
+        
+        Assert.Equal("Password and password confirmation do not match.", error);
     }
 }
