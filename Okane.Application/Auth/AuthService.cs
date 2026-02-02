@@ -9,6 +9,9 @@ public class AuthService(
 {
     public Result<SignUpResponse> SignUp(SignUpRequest request)
     {
+        if (string.IsNullOrWhiteSpace(request.Username))
+            return new ErrorResult<SignUpResponse>("Username cannot be empty.");
+        
         if (request.Password != request.PasswordConfirmation)
             return new ErrorResult<SignUpResponse>("Password and password confirmation do not match.");
 

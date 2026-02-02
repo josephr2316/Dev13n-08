@@ -63,4 +63,22 @@ public class AuthServiceTests
         
         Assert.Equal("Password and password confirmation do not match.", error);
     }
+
+    [Fact]
+    public void SingUp_EmptyUsername()
+    {
+        var error = _service.SignUp(new("", "1234", "1234"))
+            .AssertError();
+        
+        Assert.Equal("Username cannot be empty.", error);
+    }
+
+    [Fact]
+    public void SingUp_WhiteEpaceUsername()
+    {
+        var error = _service.SignUp(new(" ", "1234", "1234"))
+            .AssertError();
+        
+        Assert.Equal("Username cannot be empty.", error);
+    }
 }
