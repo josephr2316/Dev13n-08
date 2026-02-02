@@ -16,7 +16,7 @@ public class AuthServiceTests
     [Fact]
     public void SignUp()
     {
-        var response = _service.SignUp(new("test-user", "1234", "1234"))
+        var response = _service.SignUp(new("test-user", "Password1!", "Password1!"))
             .AssertOk();
         
         Assert.Equal("test-user", response.Username);
@@ -25,10 +25,10 @@ public class AuthServiceTests
     [Fact]
     public void SingIn()
     {
-        _service.SignUp(new("test-user", "1234", "1234"))
+        _service.SignUp(new("test-user", "Password1!", "Password1!"))
             .AssertOk();
         
-        var response = _service.SignIn(new("test-user", "1234"))
+        var response = _service.SignIn(new("test-user", "Password1!"))
             .AssertOk();
         
         Assert.Equal("token-test-user", response.Token);
@@ -37,10 +37,10 @@ public class AuthServiceTests
     [Fact]
     public void SingIn_PasswordDoesNotMatch()
     {
-        _service.SignUp(new("test-user", "4321", "4321"))
+        _service.SignUp(new("test-user", "Password1!", "Password1!"))
             .AssertOk();
         
-        var error = _service.SignIn(new("test-user", "1234"))
+        var error = _service.SignIn(new("test-user", "WrongPass1!"))
             .AssertUnauthorized();
         
         Assert.Equal("Invalid username or password.", error);
@@ -49,7 +49,7 @@ public class AuthServiceTests
     [Fact]
     public void SingIn_UserDoesNotExist()
     {
-        var error = _service.SignIn(new("test-user", "1234"))
+        var error = _service.SignIn(new("test-user", "Password1!"))
             .AssertUnauthorized();
         
         Assert.Equal("Invalid username or password.", error);
@@ -58,7 +58,7 @@ public class AuthServiceTests
     [Fact]
     public void Signup_PasswordAndPasswordConfirmationDoNotMatch()
     {
-        var error = _service.SignUp(new("test-user", "1234", "12345"))
+        var error = _service.SignUp(new("test-user", "Password1!", "Password2!"))
             .AssertError();
         
         Assert.Equal("Password and password confirmation do not match.", error);
@@ -82,14 +82,69 @@ public class AuthServiceTests
         Assert.Equal("Username cannot be empty.", error);
     }
 
+    [Fact]
     public void SingUp_DuplicateUsername()
     { 
-        _service.SignUp(new("same-user", "1234", "1234"))
+        _service.SignUp(new("same-user", "Password1!", "Password1!"))
             .AssertOk();
 
-        var error = _service.SignUp(new("same-user", "OtherPassword", "OtherPassword"))
+        var error = _service.SignUp(new("same-user", "OtherPass2!", "OtherPass2!"))
             .AssertError();
         
         Assert.Equal("Username is already taken.", error);
+    }
+    
+    [Fact]
+    public void SignUp_PasswordIsTooShort()
+    {
+        var error = _service.SignUp(new("test-user", "Ab1!", "Ab1!"))
+            .AssertError();
+        
+        Assert.Equal("Password must be longer than 8 characters and contain at least one uppercase letter, one lowercase letter, one number and one special character.", error);
+    }
+    
+    [Fact]
+    public void SignUp_PasswordWithoutUppercaseLetter()
+    {
+        var error = _service.SignUp(new("test-user", "password1!", "password1!"))
+            .AssertError();
+            
+        Assert.Equal("Password must be longer than 8 characters and contain at least one uppercase letter, one lowercase letter, one number and one special character.", error);
+    }
+
+    [Fact]
+    public void SignUp_PasswordWithoutSpecialCharacter()
+    {
+        var error = _service.SignUp(new("test-user", "Password12", "Password12"))
+            .AssertError();
+            
+        Assert.Equal("Password must be longer than 8 characters and contain at least one uppercase letter, one lowercase letter, one number and one special character.", error);
+    }
+
+    [Fact]
+    public void SignUp_PasswordWithoutNumber()
+    {
+        var error = _service.SignUp(new("test-user", "Password!", "Password!"))
+            .AssertError();
+            
+        Assert.Equal("Password must be longer than 8 characters and contain at least one uppercase letter, one lowercase letter, one number and one special character.", error);
+    }
+
+    [Fact]
+    public void SignUp_PasswordWithoutLowercaseLetter()
+    {
+        var error = _service.SignUp(new("test-user", "PASSWORD1!", "PASSWORD1!"))
+            .AssertError();
+            
+        Assert.Equal("Password must be longer than 8 characters and contain at least one uppercase letter, one lowercase letter, one number and one special character.", error);
+    }
+
+    [Fact]
+    public void SignUp_ValidPassword()
+    {
+        var response = _service.SignUp(new("test-user", "Password1!", "Password1!"))
+            .AssertOk();
+            
+        Assert.Equal("test-user", response.Username);
     }
 }
