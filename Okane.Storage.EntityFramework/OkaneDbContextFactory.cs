@@ -11,8 +11,8 @@ public sealed class OkaneDbContextFactory
         var optionsBuilder = new DbContextOptionsBuilder<OkaneDbContext>();
 
         optionsBuilder.UseNpgsql(
-            "Host=localhost;Port=5432;Database=OkaneLocal;Username=orodriguez");
-
+            "Host=localhost;Port=5432;Database=OkaneLocal;Username=postgres;Password=Elior_r2316@"
+        );
         return new OkaneDbContext(optionsBuilder.Options);
     }
 }
